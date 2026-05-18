@@ -16,17 +16,23 @@ type DocumentTotals = {
   totalIncludingVat: number;
 };
 
+type DocumentLineTotals = {
+  lineTotalExcludingVat: number;
+  lineTotalVat: number;
+  lineTotalIncludingVat: number;
+};
+
 const roundCurrency = (value: number): number => Math.round(value * 100) / 100;
 
-export const calculateDocumentLine = ({ quantity, unitPrice, vatRate }: LineInput): DocumentTotals => {
-  const totalExcludingVat = roundCurrency(quantity * unitPrice);
-  const totalVat = roundCurrency(totalExcludingVat * vatRate);
-  const totalIncludingVat = roundCurrency(totalExcludingVat + totalVat);
+export const calculateDocumentLine = ({ quantity, unitPrice, vatRate }: LineInput): DocumentLineTotals => {
+  const lineTotalExcludingVat = roundCurrency(quantity * unitPrice);
+  const lineTotalVat = roundCurrency(lineTotalExcludingVat * vatRate);
+  const lineTotalIncludingVat = roundCurrency(lineTotalExcludingVat + lineTotalVat);
 
   return {
-    totalExcludingVat,
-    totalVat,
-    totalIncludingVat,
+    lineTotalExcludingVat,
+    lineTotalVat,
+    lineTotalIncludingVat,
   };
 };
 
@@ -36,9 +42,9 @@ export const calculateDocumentTotals = (lines: LineInput[]): DocumentTotals => {
       const lineTotals = calculateDocumentLine(line);
 
       return {
-        totalExcludingVat: roundCurrency(totals.totalExcludingVat + lineTotals.totalExcludingVat),
-        totalVat: roundCurrency(totals.totalVat + lineTotals.totalVat),
-        totalIncludingVat: roundCurrency(totals.totalIncludingVat + lineTotals.totalIncludingVat),
+        totalExcludingVat: roundCurrency(totals.totalExcludingVat + lineTotals.lineTotalExcludingVat),
+        totalVat: roundCurrency(totals.totalVat + lineTotals.lineTotalVat),
+        totalIncludingVat: roundCurrency(totals.totalIncludingVat + lineTotals.lineTotalIncludingVat),
       };
     },
     {
@@ -55,9 +61,17 @@ export const getProjectFinancials = (
   expenses: Expense[],
 ): ProjectFinancials => {
   const projectDocuments = documents.filter((document) => document.projectId === project.id);
-  const invoice = projectDocuments.find((document) => document.type === "invoice" && document.status !== "annulee");
-  const acceptedQuote = projectDocuments.find((document) => document.type === "quote" && document.status === "accepte");
-  const revenueBasis = invoice?.totalIncludingVat ?? acceptedQuote?.totalIncludingVat ?? project.estimatedAmount;
+  const invoices = projectDocuments.filter((document) => document.type === "invoice" && document.status !== "annulee");
+  const acceptedQuotes = projectDocuments.filter(
+    (document) => document.type === "quote" && document.status === "accepte",
+  );
+  const revenueBasis = roundCurrency(
+    invoices.length > 0
+      ? invoices.reduce((total, invoice) => total + invoice.totalIncludingVat, 0)
+      : acceptedQuotes.length > 0
+        ? acceptedQuotes.reduce((total, quote) => total + quote.totalIncludingVat, 0)
+        : project.estimatedAmount,
+  );
   const expensesTotal = roundCurrency(
     expenses
       .filter((expense) => expense.projectId === project.id)

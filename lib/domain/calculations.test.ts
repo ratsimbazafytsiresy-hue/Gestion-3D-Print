@@ -13,9 +13,9 @@ import type { BusinessDocument, InvoiceDocument, QuoteDocument } from "./types";
 describe("financial calculations", () => {
   it("calculates document line totals", () => {
     expect(calculateDocumentLine({ quantity: 2, unitPrice: 100, vatRate: 0.2 })).toEqual({
-      totalExcludingVat: 200,
-      totalVat: 40,
-      totalIncludingVat: 240,
+      lineTotalExcludingVat: 200,
+      lineTotalVat: 40,
+      lineTotalIncludingVat: 240,
     });
   });
 
@@ -52,6 +52,50 @@ describe("financial calculations", () => {
       {
         ...invoice!,
         totalIncludingVat: 1280,
+      },
+      {
+        ...invoice!,
+        id: "doc-fac-2026-cancelled",
+        number: "FAC-2026-CANCELLED",
+        status: "annulee",
+        totalIncludingVat: 5000,
+      },
+    ];
+
+    expect(getProjectFinancials(project, projectDocuments, expenses)).toEqual({
+      revenueBasis: 1280,
+      expensesTotal: 344,
+      margin: 936,
+      marginRate: 0.73125,
+    });
+  });
+
+  it("aggregates all non-cancelled invoices and ignores cancelled invoices", () => {
+    const project = projects[0];
+    const acceptedQuote = documents.find(
+      (document): document is QuoteDocument => document.type === "quote" && document.projectId === project.id,
+    );
+    const invoice = documents.find(
+      (document): document is InvoiceDocument => document.type === "invoice" && document.projectId === project.id,
+    );
+
+    expect(acceptedQuote).toBeDefined();
+    expect(invoice).toBeDefined();
+
+    const projectDocuments: BusinessDocument[] = [
+      {
+        ...acceptedQuote!,
+        totalIncludingVat: 3000,
+      },
+      {
+        ...invoice!,
+        totalIncludingVat: 800,
+      },
+      {
+        ...invoice!,
+        id: "doc-fac-2026-002",
+        number: "FAC-2026-002",
+        totalIncludingVat: 480,
       },
       {
         ...invoice!,
