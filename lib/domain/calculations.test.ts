@@ -114,6 +114,48 @@ describe("financial calculations", () => {
     });
   });
 
+  it("aggregates all accepted quotes when no non-cancelled invoice exists", () => {
+    const project = projects[0];
+    const acceptedQuote = documents.find(
+      (document): document is QuoteDocument => document.type === "quote" && document.projectId === project.id,
+    );
+    const invoice = documents.find(
+      (document): document is InvoiceDocument => document.type === "invoice" && document.projectId === project.id,
+    );
+
+    expect(acceptedQuote).toBeDefined();
+    expect(invoice).toBeDefined();
+
+    const projectDocuments: BusinessDocument[] = [
+      {
+        ...acceptedQuote!,
+        totalIncludingVat: 500,
+      },
+      {
+        ...acceptedQuote!,
+        id: "doc-dev-2026-002",
+        number: "DEV-2026-002",
+        totalIncludingVat: 280,
+      },
+      {
+        ...invoice!,
+        id: "doc-fac-2026-cancelled",
+        number: "FAC-2026-CANCELLED",
+        status: "annulee",
+        totalIncludingVat: 5000,
+      },
+    ];
+
+    const financials = getProjectFinancials(project, projectDocuments, expenses);
+
+    expect(financials).toMatchObject({
+      revenueBasis: 780,
+      expensesTotal: 344,
+      margin: 436,
+    });
+    expect(financials.marginRate).toBeCloseTo(0.55897, 5);
+  });
+
   it("falls back to the estimated amount when no invoice or accepted quote exists", () => {
     const project = projects.find((item) => item.id === "project-support-capteur");
 
