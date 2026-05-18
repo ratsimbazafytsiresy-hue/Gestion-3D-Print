@@ -52,8 +52,8 @@ export function ClientDetail({ client, invoices, projects, quotes }: ClientDetai
         <p className="max-w-2xl text-sm leading-6 text-atelier-muted">{client.notes || "Aucune note renseignee pour ce client."}</p>
       </header>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(320px,0.55fr)_minmax(0,1fr)]">
-        <Panel>
+      <section className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)]">
+        <Panel className="min-w-0">
           <PanelHeader>
             <PanelTitle>Coordonnees</PanelTitle>
             <PanelDescription>Informations utiles pour relance, livraison et facturation.</PanelDescription>
@@ -67,7 +67,7 @@ export function ClientDetail({ client, invoices, projects, quotes }: ClientDetai
           </PanelContent>
         </Panel>
 
-        <Panel>
+        <Panel className="min-w-0">
           <PanelHeader>
             <PanelTitle>Projets lies</PanelTitle>
             <PanelDescription>Dossiers atelier rattaches au client.</PanelDescription>
@@ -114,7 +114,7 @@ export function ClientDetail({ client, invoices, projects, quotes }: ClientDetai
         </Panel>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-2">
+      <section className="grid min-w-0 gap-6 xl:grid-cols-2">
         <DocumentHistory documents={sortedQuotes} emptyTitle="Aucun devis" icon={<FileText aria-hidden size={18} />} title="Historique devis" />
         <DocumentHistory
           documents={sortedInvoices}
@@ -151,7 +151,7 @@ function DocumentHistory({
   title: string;
 }) {
   return (
-    <Panel>
+    <Panel className="min-w-0">
       <PanelHeader>
         <PanelTitle>{title}</PanelTitle>
         <PanelDescription>Documents commerciaux lies au compte client.</PanelDescription>
