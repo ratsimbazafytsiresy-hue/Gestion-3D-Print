@@ -19,6 +19,19 @@ describe("financial calculations", () => {
     });
   });
 
+  it("rounds document line half-cents to the nearest cent", () => {
+    expect(calculateDocumentLine({ quantity: 1, unitPrice: 10.075, vatRate: 0 })).toEqual({
+      lineTotalExcludingVat: 10.08,
+      lineTotalVat: 0,
+      lineTotalIncludingVat: 10.08,
+    });
+    expect(calculateDocumentLine({ quantity: 1, unitPrice: 1.005, vatRate: 0 })).toEqual({
+      lineTotalExcludingVat: 1.01,
+      lineTotalVat: 0,
+      lineTotalIncludingVat: 1.01,
+    });
+  });
+
   it("calculates document totals from multiple lines", () => {
     expect(
       calculateDocumentTotals([

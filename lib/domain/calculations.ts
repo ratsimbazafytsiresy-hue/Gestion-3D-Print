@@ -22,7 +22,7 @@ type DocumentLineTotals = {
   lineTotalIncludingVat: number;
 };
 
-const roundCurrency = (value: number): number => Math.round(value * 100) / 100;
+const roundCurrency = (value: number): number => Math.round(Number(`${value}e2`)) / 100;
 
 export const calculateDocumentLine = ({ quantity, unitPrice, vatRate }: LineInput): DocumentLineTotals => {
   const lineTotalExcludingVat = roundCurrency(quantity * unitPrice);
