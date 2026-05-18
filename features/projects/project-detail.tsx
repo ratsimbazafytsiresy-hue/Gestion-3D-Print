@@ -93,7 +93,7 @@ export function ProjectDetail({ data }: { data: ProjectDetailData }) {
         <Panel>
           <PanelHeader>
             <PanelTitle>Resume financier</PanelTitle>
-            <PanelDescription>Base CA, depenses liees et marge projet.</PanelDescription>
+            <PanelDescription>Base HT, depenses liees et marge projet.</PanelDescription>
           </PanelHeader>
           <PanelContent>
             <div className="grid gap-3">

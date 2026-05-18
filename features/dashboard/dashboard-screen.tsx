@@ -101,7 +101,7 @@ export function DashboardScreen({ data }: { data: DashboardData }) {
           value={currencyFormatter.format(metrics.totalExpenses)}
         />
         <KpiCard
-          detail={`${percentFormatter.format(totalRevenueBasis > 0 ? metrics.totalMargin / totalRevenueBasis : 0)} sur base CA`}
+          detail={`${percentFormatter.format(totalRevenueBasis > 0 ? metrics.totalMargin / totalRevenueBasis : 0)} sur base HT`}
           icon={<TrendingUp aria-hidden className="h-4 w-4" />}
           label="Marge totale"
           tone="green"

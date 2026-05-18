@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { Panel, PanelContent, PanelDescription, PanelHeader, PanelTitle } from "@/components/ui/panel";
 import { LoginForm } from "@/features/auth/login-form";
 
@@ -11,7 +13,9 @@ export default function LoginPage() {
           <PanelDescription>Connexion a l&apos;espace interne de pilotage atelier.</PanelDescription>
         </PanelHeader>
         <PanelContent>
-          <LoginForm />
+          <Suspense fallback={<div aria-hidden className="h-40" />}>
+            <LoginForm />
+          </Suspense>
         </PanelContent>
       </Panel>
     </div>

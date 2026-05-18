@@ -2,6 +2,7 @@
 
 import { FormEvent, useId, useState } from "react";
 import { LogIn } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
@@ -14,6 +15,8 @@ function hasPublicSupabaseEnv() {
 }
 
 export function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const emailId = useId();
   const passwordId = useId();
   const feedbackId = useId();
@@ -43,6 +46,8 @@ export function LoginForm() {
       }
 
       setFeedback({ tone: "success", message: `Connexion reussie pour ${email}.` });
+      router.replace(getRedirectTarget(searchParams.get("redirectedFrom")));
+      router.refresh();
     } catch (error) {
       setFeedback({
         tone: "error",
@@ -100,4 +105,12 @@ export function LoginForm() {
       </Button>
     </form>
   );
+}
+
+function getRedirectTarget(redirectedFrom: string | null) {
+  if (!redirectedFrom || !redirectedFrom.startsWith("/") || redirectedFrom.startsWith("//")) {
+    return "/";
+  }
+
+  return redirectedFrom;
 }
