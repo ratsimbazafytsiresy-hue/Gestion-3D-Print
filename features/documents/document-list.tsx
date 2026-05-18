@@ -105,7 +105,7 @@ export function DocumentList({ clients, documents, projects }: DocumentListProps
             </TableHeader>
             <TableBody>
               {rows.map(({ clientName, document, projectTitle }) => (
-                <TableRow key={document.id}>
+                <TableRow className="scroll-mt-28" id={document.id} key={document.id}>
                   <TableCell>
                     <DocumentTypeBadge type={document.type} />
                   </TableCell>
