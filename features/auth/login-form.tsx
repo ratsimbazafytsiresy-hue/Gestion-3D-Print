@@ -108,7 +108,13 @@ export function LoginForm() {
 }
 
 function getRedirectTarget(redirectedFrom: string | null) {
-  if (!redirectedFrom || !redirectedFrom.startsWith("/") || redirectedFrom.startsWith("//")) {
+  if (
+    !redirectedFrom ||
+    !redirectedFrom.startsWith("/") ||
+    redirectedFrom.startsWith("//") ||
+    redirectedFrom.includes("\\") ||
+    redirectedFrom.toLowerCase().includes("%5c")
+  ) {
     return "/";
   }
 

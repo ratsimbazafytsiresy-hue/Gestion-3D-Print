@@ -83,4 +83,28 @@ describe("LoginForm", () => {
     expect(replace).toHaveBeenCalledWith("/projets?status=en_production");
     expect(refresh).toHaveBeenCalledTimes(1);
   });
+
+  it.each(["https://evil.example", "//evil.example", "/%5Cevil.example"])(
+    "falls back to the dashboard for unsafe redirectedFrom values: %s",
+    async (redirectedFrom) => {
+      const user = userEvent.setup();
+      const signInWithPassword = vi.fn().mockResolvedValue({ data: { user: { email: "atelier@example.com" } }, error: null });
+
+      searchParams = new URLSearchParams({ redirectedFrom });
+      vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+      vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "public-anon-key");
+      vi.mocked(createSupabaseBrowserClient).mockReturnValue({
+        auth: { signInWithPassword },
+      } as unknown as ReturnType<typeof createSupabaseBrowserClient>);
+
+      render(<LoginForm />);
+
+      await user.type(screen.getByLabelText("Email"), "atelier@example.com");
+      await user.type(screen.getByLabelText("Mot de passe"), "secret");
+      await user.click(screen.getByRole("button", { name: "Se connecter" }));
+
+      expect(replace).toHaveBeenCalledWith("/");
+      expect(refresh).toHaveBeenCalledTimes(1);
+    },
+  );
 });
