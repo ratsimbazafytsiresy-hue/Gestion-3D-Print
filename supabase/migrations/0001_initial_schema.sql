@@ -133,6 +133,19 @@ create table public.expenses (
   updated_at timestamptz not null default now()
 );
 
+create function public.current_user_role()
+returns public.user_role
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select role
+  from public.profiles
+  where user_id = (select auth.uid())
+  limit 1
+$$;
+
 create index projects_client_id on public.projects (client_id);
 create index projects_delivery_date on public.projects (delivery_date);
 create index project_stages_project_id on public.project_stages (project_id);
@@ -153,13 +166,24 @@ alter table public.expenses enable row level security;
 create policy "authenticated read own profiles"
   on public.profiles for select
   to authenticated
-  using (user_id = auth.uid());
+  using (user_id = (select auth.uid()));
+
+create policy "authenticated admin read profiles"
+  on public.profiles for select
+  to authenticated
+  using (public.current_user_role() = 'admin');
 
 create policy "authenticated update own profiles"
   on public.profiles for update
   to authenticated
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()) and role = public.current_user_role());
+
+create policy "authenticated admin manage profiles"
+  on public.profiles for all
+  to authenticated
+  using (public.current_user_role() = 'admin')
+  with check (public.current_user_role() = 'admin');
 
 create policy "authenticated manage clients"
   on public.clients for all
