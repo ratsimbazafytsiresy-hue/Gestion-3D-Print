@@ -7,4 +7,6 @@ build/
 .env.*.local
 .vercel/
 .superpowers/
-
+.worktrees
+.worktrees/
+coverage/
