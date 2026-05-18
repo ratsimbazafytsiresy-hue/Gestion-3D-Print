@@ -13,6 +13,7 @@ import { MATERIALS, PROJECT_PRIORITY_LABELS, PROJECT_STATUS_LABELS } from "@/lib
 import { filterProjects, sortProjectsByDeliveryDate } from "@/lib/domain/filters";
 import type { BusinessDocument, Client, Expense, Material, Project, ProjectPriority, ProjectStatus } from "@/lib/domain/types";
 
+import { formatCalendarDate } from "./project-date-format";
 import { ProjectStatusBadge } from "./project-status-badge";
 
 type ProjectListProps = {
@@ -135,7 +136,7 @@ export function ProjectList({ clients, documents, expenses, projects }: ProjectL
                     <TableCell>
                       <Badge>{project.material}</Badge>
                     </TableCell>
-                    <TableCell className="tabular-nums text-atelier-muted">{formatDate(project.deliveryDate)}</TableCell>
+                    <TableCell className="tabular-nums text-atelier-muted">{formatCalendarDate(project.deliveryDate)}</TableCell>
                     <TableCell className="text-right tabular-nums">{currencyFormatter.format(project.estimatedAmount)}</TableCell>
                     <TableCell className="text-right font-medium tabular-nums text-atelier-green">
                       {currencyFormatter.format(financials.margin)}
@@ -161,12 +162,4 @@ function PriorityBadge({ priority }: { priority: ProjectPriority }) {
   }
 
   return <Badge>{PROJECT_PRIORITY_LABELS[priority]}</Badge>;
-}
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
 }

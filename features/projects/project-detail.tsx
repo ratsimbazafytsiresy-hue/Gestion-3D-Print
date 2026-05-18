@@ -16,6 +16,7 @@ import {
 import type { ProjectDetailData } from "@/lib/data/repository";
 import type { BusinessDocument, ProjectPriority, StageStatus, TaskStatus } from "@/lib/domain/types";
 
+import { formatCalendarDate } from "./project-date-format";
 import { ProjectStatusBadge } from "./project-status-badge";
 
 const currencyFormatter = new Intl.NumberFormat("fr-FR", {
@@ -54,7 +55,7 @@ export function ProjectDetail({ data }: { data: ProjectDetailData }) {
             <PriorityBadge priority={project.priority} />
             <Badge tone="amber">
               <CalendarDays aria-hidden className="mr-1.5 h-3.5 w-3.5" />
-              {formatDate(project.deliveryDate)}
+              {formatCalendarDate(project.deliveryDate)}
             </Badge>
           </div>
         </div>
@@ -151,7 +152,7 @@ export function ProjectDetail({ data }: { data: ProjectDetailData }) {
                           <TaskStatusBadge status={task.status} />
                         </TableCell>
                         <TableCell className="tabular-nums text-atelier-muted">
-                          {task.dueDate ? formatDate(task.dueDate) : "Non renseignee"}
+                          {task.dueDate ? formatCalendarDate(task.dueDate) : "Non renseignee"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -203,7 +204,7 @@ export function ProjectDetail({ data }: { data: ProjectDetailData }) {
                           <Link className="font-medium leading-5 hover:text-atelier-amber" href={`/depenses#${expense.id}`}>
                             {expense.note}
                           </Link>
-                          <p className="mt-1 text-xs text-atelier-muted">{formatDate(expense.date)}</p>
+                          <p className="mt-1 text-xs text-atelier-muted">{formatCalendarDate(expense.date)}</p>
                         </TableCell>
                         <TableCell>
                           <Badge>{EXPENSE_CATEGORY_LABELS[expense.category]}</Badge>
@@ -317,14 +318,6 @@ function TaskStatusBadge({ status }: { status: TaskStatus }) {
   }
 
   return <Badge>{TASK_STATUS_LABELS[status]}</Badge>;
-}
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
 }
 
 function formatPrintTime(minutes: number) {
