@@ -7,12 +7,12 @@ export type SupabaseEnv = {
 };
 
 export function hasSupabaseEnv() {
-  return Boolean(process.env[SUPABASE_URL_KEY] && process.env[SUPABASE_ANON_KEY]);
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
 export function getSupabaseEnv(): SupabaseEnv {
-  const supabaseUrl = process.env[SUPABASE_URL_KEY];
-  const supabaseAnonKey = process.env[SUPABASE_ANON_KEY];
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     const missingKeys = [
