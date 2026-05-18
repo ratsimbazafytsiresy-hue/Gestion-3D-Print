@@ -64,7 +64,10 @@ export function Sidebar() {
           <BrandBlock compact />
           <WalletCards aria-hidden="true" className="text-atelier-amber" size={20} />
         </div>
-        <nav aria-label="Navigation principale" className="flex gap-1 overflow-x-auto px-3 pb-3">
+        <nav
+          aria-label="Navigation principale"
+          className="flex min-w-0 max-w-full gap-1 overflow-x-auto overflow-y-hidden overscroll-x-contain px-3 pb-3 [contain:layout_paint_inline-size]"
+        >
           {navEntries.map((entry) => (
             <MobileLink active={isActiveRoute(pathname, entry.href)} entry={entry} key={entry.href} />
           ))}

@@ -2,7 +2,15 @@ import type { HTMLAttributes, TableHTMLAttributes, TdHTMLAttributes, ThHTMLAttri
 import { cn } from "@/lib/utils";
 
 export function TableContainer({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("overflow-x-auto rounded-lg border border-atelier-line bg-atelier-surface", className)} {...props} />;
+  return (
+    <div
+      className={cn(
+        "w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-lg border border-atelier-line bg-atelier-surface [contain:layout_paint_inline-size]",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function Table({ className, ...props }: TableHTMLAttributes<HTMLTableElement>) {
