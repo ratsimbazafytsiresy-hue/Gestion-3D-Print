@@ -25,36 +25,40 @@ function ExpenseCategoryChartContent({ data }: ExpenseCategoryChartProps) {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [width, setWidth] = useState<number | null>(null);
 
-  const measureWidth = useCallback(() => {
-    if (!container) {
-      return;
-    }
-
-    const nextWidth = Math.floor(container.getBoundingClientRect().width);
+  const updateWidth = useCallback((element: HTMLDivElement) => {
+    const nextWidth = Math.floor(element.getBoundingClientRect().width);
     setWidth(nextWidth > 0 ? nextWidth : null);
-  }, [container]);
+  }, []);
+
+  const handleContainerRef = useCallback(
+    (element: HTMLDivElement | null) => {
+      setContainer(element);
+
+      if (element) {
+        updateWidth(element);
+      }
+    },
+    [updateWidth],
+  );
 
   useEffect(() => {
     if (!container) {
       return undefined;
     }
 
-    let frameId = window.requestAnimationFrame(measureWidth);
     const handleResize = () => {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(measureWidth);
+      updateWidth(container);
     };
 
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", handleResize);
     };
-  }, [container, measureWidth]);
+  }, [container, updateWidth]);
 
   return (
-    <div className="h-72 w-full min-w-0 overflow-hidden" ref={setContainer}>
+    <div className="h-72 w-full min-w-0 overflow-hidden" ref={handleContainerRef}>
       {width ? (
         <BarChart
           data={data}
