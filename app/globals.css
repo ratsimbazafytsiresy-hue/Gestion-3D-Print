@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@source "../app";
+@source "../components";
+@source "../features";
+@source "../lib";
 
 @theme {
   --color-atelier-canvas: #f7f5ef;

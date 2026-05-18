@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useCallback, useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
 type ExpenseCategoryDatum = {
   category: string;
@@ -18,11 +19,50 @@ const currencyFormatter = new Intl.NumberFormat("fr-FR", {
   style: "currency",
 });
 
+const CHART_HEIGHT = 288;
+
 function ExpenseCategoryChartContent({ data }: ExpenseCategoryChartProps) {
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState<number | null>(null);
+
+  const measureWidth = useCallback(() => {
+    if (!container) {
+      return;
+    }
+
+    const nextWidth = Math.floor(container.getBoundingClientRect().width);
+    setWidth(nextWidth > 0 ? nextWidth : null);
+  }, [container]);
+
+  useEffect(() => {
+    if (!container) {
+      return undefined;
+    }
+
+    let frameId = window.requestAnimationFrame(measureWidth);
+    const handleResize = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(measureWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [container, measureWidth]);
+
   return (
-    <div className="h-72 w-full min-w-0">
-      <ResponsiveContainer height="100%" width="100%">
-        <BarChart data={data} layout="vertical" margin={{ bottom: 8, left: 8, right: 16, top: 8 }}>
+    <div className="h-72 w-full min-w-0 overflow-hidden" ref={setContainer}>
+      {width ? (
+        <BarChart
+          data={data}
+          height={CHART_HEIGHT}
+          layout="vertical"
+          margin={{ bottom: 8, left: 8, right: 16, top: 8 }}
+          width={width}
+        >
           <CartesianGrid stroke="#e8dfd1" strokeDasharray="4 4" horizontal={false} />
           <XAxis
             axisLine={false}
@@ -52,7 +92,7 @@ function ExpenseCategoryChartContent({ data }: ExpenseCategoryChartProps) {
           />
           <Bar dataKey="total" fill="#b7791f" name="Depenses" radius={[0, 4, 4, 0]} />
         </BarChart>
-      </ResponsiveContainer>
+      ) : null}
     </div>
   );
 }
