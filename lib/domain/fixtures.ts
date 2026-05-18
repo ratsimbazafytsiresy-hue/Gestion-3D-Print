@@ -111,16 +111,29 @@ export const projects: Project[] = [
   },
 ];
 
-const getDefaultStageStatus = (index: number): ProjectStage["status"] => {
-  if (index < 2) {
-    return "termine";
-  }
+type StageStatusSequence = [
+  ProjectStage["status"],
+  ProjectStage["status"],
+  ProjectStage["status"],
+  ProjectStage["status"],
+  ProjectStage["status"],
+  ProjectStage["status"],
+  ProjectStage["status"],
+];
 
-  if (index === 3) {
-    return "en_cours";
-  }
+const STAGE_STATUSES_BY_PROJECT_STATUS: Record<Project["status"], StageStatusSequence> = {
+  nouveau: ["en_cours", "a_faire", "a_faire", "a_faire", "a_faire", "a_faire", "a_faire"],
+  devis_envoye: ["termine", "en_cours", "a_faire", "a_faire", "a_faire", "a_faire", "a_faire"],
+  valide: ["termine", "termine", "termine", "a_faire", "a_faire", "a_faire", "a_faire"],
+  en_production: ["termine", "termine", "termine", "en_cours", "a_faire", "a_faire", "a_faire"],
+  en_controle: ["termine", "termine", "termine", "termine", "en_cours", "a_faire", "a_faire"],
+  livre: ["termine", "termine", "termine", "termine", "termine", "termine", "a_faire"],
+  termine: ["termine", "termine", "termine", "termine", "termine", "termine", "termine"],
+  annule: ["bloque", "a_faire", "a_faire", "a_faire", "a_faire", "a_faire", "a_faire"],
+};
 
-  return "a_faire";
+const getStageStatus = (projectStatus: Project["status"], index: number): ProjectStage["status"] => {
+  return STAGE_STATUSES_BY_PROJECT_STATUS[projectStatus][index];
 };
 
 export const stages: ProjectStage[] = projects.flatMap((project) =>
@@ -129,7 +142,7 @@ export const stages: ProjectStage[] = projects.flatMap((project) =>
     projectId: project.id,
     name,
     position: index + 1,
-    status: getDefaultStageStatus(index),
+    status: getStageStatus(project.status, index),
     startDate: null,
     endDate: null,
   })),

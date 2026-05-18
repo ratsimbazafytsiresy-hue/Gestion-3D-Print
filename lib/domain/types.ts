@@ -77,11 +77,9 @@ export interface DocumentLine {
   lineTotalIncludingVat: number;
 }
 
-export interface BusinessDocument {
+export interface BaseBusinessDocument {
   id: string;
-  type: DocumentType;
   number: string;
-  status: QuoteStatus | InvoiceStatus;
   clientId: string;
   projectId: string;
   issueDate: string;
@@ -91,6 +89,18 @@ export interface BusinessDocument {
   totalIncludingVat: number;
   lines: DocumentLine[];
 }
+
+export interface QuoteDocument extends BaseBusinessDocument {
+  type: "quote";
+  status: QuoteStatus;
+}
+
+export interface InvoiceDocument extends BaseBusinessDocument {
+  type: "invoice";
+  status: InvoiceStatus;
+}
+
+export type BusinessDocument = QuoteDocument | InvoiceDocument;
 
 export interface Expense {
   id: string;
