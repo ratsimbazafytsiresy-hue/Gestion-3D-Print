@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
@@ -17,7 +17,10 @@ const variantClasses: Record<ButtonVariant, string> = {
     "border-transparent bg-transparent text-atelier-muted hover:bg-atelier-surface hover:text-atelier-ink disabled:text-atelier-muted",
 };
 
-export function Button({ className, variant = "primary", iconOnly = false, type = "button", ...props }: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { className, variant = "primary", iconOnly = false, type = "button", ...props },
+  ref,
+) {
   return (
     <button
       className={cn(
@@ -28,8 +31,9 @@ export function Button({ className, variant = "primary", iconOnly = false, type 
         variantClasses[variant],
         className,
       )}
+      ref={ref}
       type={type}
       {...props}
     />
   );
-}
+});
