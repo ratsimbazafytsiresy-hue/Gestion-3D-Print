@@ -12,14 +12,14 @@ describe("getDashboardMetrics", () => {
     expect(metrics.totalQuoted).toBe(1280);
     expect(metrics.totalInvoiced).toBe(1280);
     expect(metrics.totalExpenses).toBe(384);
-    expect(metrics.totalMargin).toBe(3046);
+    expect(metrics.totalMargin).toBe(2832.67);
     expect(metrics.lateProjects).toBe(1);
     expect(metrics.atRiskProjects).toBe(0);
     expect(metrics.projectFinancials).toHaveLength(4);
     expect(metrics.projectFinancials[0]).toMatchObject({
       projectId: "project-boitier-electronique",
-      margin: 936,
-      revenueBasis: 1280,
+      margin: 722.67,
+      revenueBasis: 1066.67,
     });
   });
 });

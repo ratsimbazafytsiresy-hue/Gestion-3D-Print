@@ -67,9 +67,9 @@ export const getProjectFinancials = (
   );
   const revenueBasis = roundCurrency(
     invoices.length > 0
-      ? invoices.reduce((total, invoice) => total + invoice.totalIncludingVat, 0)
+      ? invoices.reduce((total, invoice) => total + invoice.totalExcludingVat, 0)
       : acceptedQuotes.length > 0
-        ? acceptedQuotes.reduce((total, quote) => total + quote.totalIncludingVat, 0)
+        ? acceptedQuotes.reduce((total, quote) => total + quote.totalExcludingVat, 0)
         : project.estimatedAmount,
   );
   const expensesTotal = roundCurrency(

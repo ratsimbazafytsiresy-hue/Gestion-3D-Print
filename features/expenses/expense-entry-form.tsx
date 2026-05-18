@@ -115,7 +115,7 @@ export function ExpenseEntryForm({ projects }: ExpenseEntryFormProps) {
             <Input
               className="text-right tabular-nums"
               id="expense-amount"
-              min="0"
+              min="0.01"
               onChange={(event) => updateForm({ amount: event.target.value })}
               step="0.01"
               type="number"
@@ -151,7 +151,7 @@ function parseAmountInput(value: string) {
   const normalizedValue = value.trim().replace(",", ".");
 
   if (normalizedValue.length === 0) {
-    return 0;
+    return Number.NaN;
   }
 
   const parsed = Number(normalizedValue);

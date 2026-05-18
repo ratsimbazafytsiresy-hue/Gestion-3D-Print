@@ -26,4 +26,16 @@ describe("expenseFormSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("rejects a zero amount to match the database constraint", () => {
+    const result = expenseFormSchema.safeParse({
+      projectId: "project-boitier-electronique",
+      category: "matieres",
+      date: "2026-05-18",
+      amount: 0,
+      note: "Montant vide",
+    });
+
+    expect(result.success).toBe(false);
+  });
 });

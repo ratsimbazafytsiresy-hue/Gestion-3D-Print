@@ -90,10 +90,10 @@ function MarginChartContent({ data }: MarginChartProps) {
             }}
             formatter={(value, name) => [
               currencyFormatter.format(Number(value)),
-              name === "margin" ? "Marge" : name === "expenses" ? "Depenses" : "Base CA",
+              name === "margin" ? "Marge" : name === "expenses" ? "Depenses" : "Base HT",
             ]}
           />
-          <Bar dataKey="revenue" fill="#d8cab7" name="Base CA" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="revenue" fill="#d8cab7" name="Base HT" radius={[4, 4, 0, 0]} />
           <Bar dataKey="expenses" fill="#b7791f" name="Depenses" radius={[4, 4, 0, 0]} />
           <Bar dataKey="margin" fill="#1f766f" name="Marge" radius={[4, 4, 0, 0]} />
         </BarChart>

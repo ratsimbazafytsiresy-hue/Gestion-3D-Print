@@ -147,3 +147,221 @@ on conflict (id) do update set
   model_file_name = excluded.model_file_name,
   model_file_path = excluded.model_file_path,
   updated_at = now();
+
+insert into public.project_stages (project_id, name, position, status, start_date, end_date)
+select seed.project_id, seed.name, seed.position, seed.status, null, null
+from (
+  values
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Demande', 1, 'termine'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Devis', 2, 'termine'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Validation', 3, 'termine'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Production', 4, 'en_cours'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Controle', 5, 'a_faire'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Livraison', 6, 'a_faire'::public.stage_status),
+    ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid, 'Termine', 7, 'a_faire'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Demande', 1, 'termine'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Devis', 2, 'en_cours'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Validation', 3, 'a_faire'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Production', 4, 'a_faire'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Controle', 5, 'a_faire'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Livraison', 6, 'a_faire'::public.stage_status),
+    ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid, 'Termine', 7, 'a_faire'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Demande', 1, 'termine'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Devis', 2, 'termine'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Validation', 3, 'termine'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Production', 4, 'termine'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Controle', 5, 'en_cours'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Livraison', 6, 'a_faire'::public.stage_status),
+    ('cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid, 'Termine', 7, 'a_faire'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Demande', 1, 'termine'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Devis', 2, 'termine'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Validation', 3, 'termine'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Production', 4, 'a_faire'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Controle', 5, 'a_faire'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Livraison', 6, 'a_faire'::public.stage_status),
+    ('dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid, 'Termine', 7, 'a_faire'::public.stage_status)
+) as seed(project_id, name, position, status)
+on conflict (project_id, position) do update set
+  name = excluded.name,
+  status = excluded.status,
+  start_date = excluded.start_date,
+  end_date = excluded.end_date,
+  updated_at = now();
+
+insert into public.project_tasks (id, project_id, stage_id, title, status, due_date, assigned_to)
+values
+  (
+    '10000000-0000-0000-0000-000000000001',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    (select id from public.project_stages where project_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and position = 4),
+    'Verifier orientation et supports dans le slicer',
+    'termine',
+    '2026-05-14',
+    null
+  ),
+  (
+    '10000000-0000-0000-0000-000000000002',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    (select id from public.project_stages where project_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' and position = 5),
+    'Controler clips internes et dimensions',
+    'a_faire',
+    '2026-05-21',
+    null
+  ),
+  (
+    '10000000-0000-0000-0000-000000000003',
+    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    (select id from public.project_stages where project_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' and position = 2),
+    'Relancer validation devis',
+    'en_cours',
+    '2026-05-20',
+    null
+  )
+on conflict (id) do update set
+  project_id = excluded.project_id,
+  stage_id = excluded.stage_id,
+  title = excluded.title,
+  status = excluded.status,
+  due_date = excluded.due_date,
+  assigned_to = excluded.assigned_to,
+  updated_at = now();
+
+insert into public.documents (
+  id,
+  type,
+  number,
+  status,
+  client_id,
+  project_id,
+  issue_date,
+  due_date,
+  total_excluding_vat,
+  total_vat,
+  total_including_vat
+)
+values
+  (
+    '20000000-0000-0000-0000-000000000001',
+    'quote',
+    'DEV-2026-001',
+    'accepte',
+    '11111111-1111-1111-1111-111111111111',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    '2026-05-12',
+    null,
+    1066.67,
+    213.33,
+    1280
+  ),
+  (
+    '20000000-0000-0000-0000-000000000002',
+    'invoice',
+    'FAC-2026-001',
+    'envoyee',
+    '11111111-1111-1111-1111-111111111111',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    '2026-05-15',
+    '2026-06-15',
+    1066.67,
+    213.33,
+    1280
+  )
+on conflict (id) do update set
+  type = excluded.type,
+  number = excluded.number,
+  status = excluded.status,
+  client_id = excluded.client_id,
+  project_id = excluded.project_id,
+  issue_date = excluded.issue_date,
+  due_date = excluded.due_date,
+  total_excluding_vat = excluded.total_excluding_vat,
+  total_vat = excluded.total_vat,
+  total_including_vat = excluded.total_including_vat,
+  updated_at = now();
+
+insert into public.document_lines (
+  id,
+  document_id,
+  description,
+  quantity,
+  unit_price,
+  vat_rate,
+  line_total_excluding_vat,
+  line_total_vat,
+  line_total_including_vat
+)
+values
+  (
+    '30000000-0000-0000-0000-000000000001',
+    '20000000-0000-0000-0000-000000000001',
+    'Preparation fichier et impression PETG',
+    1,
+    1066.67,
+    0.2,
+    1066.67,
+    213.33,
+    1280
+  ),
+  (
+    '30000000-0000-0000-0000-000000000002',
+    '20000000-0000-0000-0000-000000000002',
+    'Prototype boitier electronique',
+    1,
+    1066.67,
+    0.2,
+    1066.67,
+    213.33,
+    1280
+  )
+on conflict (id) do update set
+  document_id = excluded.document_id,
+  description = excluded.description,
+  quantity = excluded.quantity,
+  unit_price = excluded.unit_price,
+  vat_rate = excluded.vat_rate,
+  line_total_excluding_vat = excluded.line_total_excluding_vat,
+  line_total_vat = excluded.line_total_vat,
+  line_total_including_vat = excluded.line_total_including_vat,
+  updated_at = now();
+
+insert into public.expenses (id, project_id, category, date, amount, note)
+values
+  (
+    '40000000-0000-0000-0000-000000000001',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    'matieres',
+    '2026-05-13',
+    84,
+    'PETG noir 420g + purge'
+  ),
+  (
+    '40000000-0000-0000-0000-000000000002',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    'main_oeuvre',
+    '2026-05-14',
+    260,
+    'Preparation, slicer, controle'
+  ),
+  (
+    '40000000-0000-0000-0000-000000000003',
+    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    'transport',
+    '2026-05-18',
+    18,
+    'Expedition prevue'
+  ),
+  (
+    '40000000-0000-0000-0000-000000000004',
+    'cccccccc-cccc-cccc-cccc-cccccccccccc',
+    'matieres',
+    '2026-05-09',
+    22,
+    'PLA blanc 180g'
+  )
+on conflict (id) do update set
+  project_id = excluded.project_id,
+  category = excluded.category,
+  date = excluded.date,
+  amount = excluded.amount,
+  note = excluded.note,
+  updated_at = now();

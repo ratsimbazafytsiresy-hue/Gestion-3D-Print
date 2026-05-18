@@ -97,7 +97,7 @@ export function ProjectDetail({ data }: { data: ProjectDetailData }) {
           </PanelHeader>
           <PanelContent>
             <div className="grid gap-3">
-              <MoneyRow label="Base CA" value={currencyFormatter.format(financials.revenueBasis)} />
+              <MoneyRow label="Base HT" value={currencyFormatter.format(financials.revenueBasis)} />
               <MoneyRow label="Depenses" value={currencyFormatter.format(financials.expensesTotal)} />
               <MoneyRow label="Marge" strong value={currencyFormatter.format(financials.margin)} />
               <MoneyRow label="Taux marge" value={percentFormatter.format(financials.marginRate)} />

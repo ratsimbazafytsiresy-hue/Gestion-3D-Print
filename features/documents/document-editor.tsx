@@ -12,7 +12,7 @@ import { DEFAULT_VAT_RATE } from "@/lib/domain/constants";
 import { calculateDocumentTotals } from "@/lib/domain/calculations";
 import type { Client, DocumentType, Project } from "@/lib/domain/types";
 
-import type { DocumentFormValues, DocumentLineFormValues } from "./document-form-schema";
+import { documentFormSchema, type DocumentFormValues, type DocumentLineFormValues } from "./document-form-schema";
 
 type DocumentEditorProps = {
   clients: Client[];
@@ -62,6 +62,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
   const firstClientId = clients[0]?.id ?? "";
   const firstProjectId = projects.find((project) => project.clientId === firstClientId)?.id ?? projects[0]?.id ?? "";
   const [savedDocument, setSavedDocument] = useState<EditorFormState | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [form, setForm] = useState<EditorFormState>({
     clientId: firstClientId,
     dueDate: "",
@@ -84,11 +85,13 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
       ...current,
       lines: current.lines.map((line) => (line.id === lineId ? { ...line, ...values } : line)),
     }));
+    setValidationError(null);
     setSavedDocument(null);
   };
 
   const addLine = () => {
     setForm((current) => ({ ...current, lines: [...current.lines, createLine()] }));
+    setValidationError(null);
     setSavedDocument(null);
   };
 
@@ -100,6 +103,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
 
       return { ...current, lines: current.lines.filter((line) => line.id !== lineId) };
     });
+    setValidationError(null);
     setSavedDocument(null);
   };
 
@@ -107,6 +111,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
     const nextProjectId = projects.find((project) => project.clientId === clientId)?.id ?? projects[0]?.id ?? "";
 
     setForm((current) => ({ ...current, clientId, projectId: nextProjectId }));
+    setValidationError(null);
     setSavedDocument(null);
   };
 
@@ -116,11 +121,24 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
       number: current.number.startsWith(type === "quote" ? "DEV" : "FAC") ? current.number : type === "quote" ? "DEV-2026-002" : "FAC-2026-002",
       type,
     }));
+    setValidationError(null);
     setSavedDocument(null);
   };
 
   const saveDocument = () => {
+    const result = documentFormSchema.safeParse({
+      ...form,
+      lines: form.lines.map(toDocumentLineFormValues),
+    });
+
+    if (!result.success) {
+      setValidationError("Completez au moins une ligne valide.");
+      setSavedDocument(null);
+      return;
+    }
+
     setSavedDocument(form);
+    setValidationError(null);
   };
 
   return (
@@ -149,6 +167,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
               id="document-number"
               onChange={(event) => {
                 setForm((current) => ({ ...current, number: event.target.value }));
+                setValidationError(null);
                 setSavedDocument(null);
               }}
               value={form.number}
@@ -168,6 +187,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
               id="document-project"
               onChange={(event) => {
                 setForm((current) => ({ ...current, projectId: event.target.value }));
+                setValidationError(null);
                 setSavedDocument(null);
               }}
               value={form.projectId}
@@ -184,6 +204,7 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
               id="document-issue-date"
               onChange={(event) => {
                 setForm((current) => ({ ...current, issueDate: event.target.value }));
+                setValidationError(null);
                 setSavedDocument(null);
               }}
               type="date"
@@ -283,9 +304,23 @@ export function DocumentEditor({ clients, projects }: DocumentEditorProps) {
             Enregistrer
           </Button>
         </div>
+        {validationError ? (
+          <p className="text-sm text-atelier-danger" role="alert">
+            {validationError}
+          </p>
+        ) : null}
       </PanelContent>
     </Panel>
   );
+}
+
+function toDocumentLineFormValues(line: EditorLine): DocumentLineFormValues {
+  return {
+    description: line.description,
+    quantity: line.quantity,
+    unitPrice: line.unitPrice,
+    vatRate: line.vatRate,
+  };
 }
 
 function TotalRow({ label, strong = false, value }: { label: string; strong?: boolean; value: string }) {

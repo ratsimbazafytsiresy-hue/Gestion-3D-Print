@@ -60,10 +60,12 @@ describe("financial calculations", () => {
     const projectDocuments: BusinessDocument[] = [
       {
         ...acceptedQuote!,
+        totalExcludingVat: 750,
         totalIncludingVat: 900,
       },
       {
         ...invoice!,
+        totalExcludingVat: 1066.67,
         totalIncludingVat: 1280,
       },
       {
@@ -71,16 +73,19 @@ describe("financial calculations", () => {
         id: "doc-fac-2026-cancelled",
         number: "FAC-2026-CANCELLED",
         status: "annulee",
+        totalExcludingVat: 4166.67,
         totalIncludingVat: 5000,
       },
     ];
 
-    expect(getProjectFinancials(project, projectDocuments, expenses)).toEqual({
-      revenueBasis: 1280,
+    const financials = getProjectFinancials(project, projectDocuments, expenses);
+
+    expect(financials).toMatchObject({
+      revenueBasis: 1066.67,
       expensesTotal: 344,
-      margin: 936,
-      marginRate: 0.73125,
+      margin: 722.67,
     });
+    expect(financials.marginRate).toBeCloseTo(0.6775, 4);
   });
 
   it("aggregates all non-cancelled invoices and ignores cancelled invoices", () => {
@@ -98,16 +103,19 @@ describe("financial calculations", () => {
     const projectDocuments: BusinessDocument[] = [
       {
         ...acceptedQuote!,
+        totalExcludingVat: 2500,
         totalIncludingVat: 3000,
       },
       {
         ...invoice!,
+        totalExcludingVat: 666.67,
         totalIncludingVat: 800,
       },
       {
         ...invoice!,
         id: "doc-fac-2026-002",
         number: "FAC-2026-002",
+        totalExcludingVat: 400,
         totalIncludingVat: 480,
       },
       {
@@ -115,16 +123,19 @@ describe("financial calculations", () => {
         id: "doc-fac-2026-cancelled",
         number: "FAC-2026-CANCELLED",
         status: "annulee",
+        totalExcludingVat: 4166.67,
         totalIncludingVat: 5000,
       },
     ];
 
-    expect(getProjectFinancials(project, projectDocuments, expenses)).toEqual({
-      revenueBasis: 1280,
+    const financials = getProjectFinancials(project, projectDocuments, expenses);
+
+    expect(financials).toMatchObject({
+      revenueBasis: 1066.67,
       expensesTotal: 344,
-      margin: 936,
-      marginRate: 0.73125,
+      margin: 722.67,
     });
+    expect(financials.marginRate).toBeCloseTo(0.6775, 4);
   });
 
   it("aggregates all accepted quotes when no non-cancelled invoice exists", () => {
@@ -142,12 +153,14 @@ describe("financial calculations", () => {
     const projectDocuments: BusinessDocument[] = [
       {
         ...acceptedQuote!,
+        totalExcludingVat: 416.67,
         totalIncludingVat: 500,
       },
       {
         ...acceptedQuote!,
         id: "doc-dev-2026-002",
         number: "DEV-2026-002",
+        totalExcludingVat: 233.33,
         totalIncludingVat: 280,
       },
       {
@@ -155,6 +168,7 @@ describe("financial calculations", () => {
         id: "doc-fac-2026-cancelled",
         number: "FAC-2026-CANCELLED",
         status: "annulee",
+        totalExcludingVat: 4166.67,
         totalIncludingVat: 5000,
       },
     ];
@@ -162,11 +176,11 @@ describe("financial calculations", () => {
     const financials = getProjectFinancials(project, projectDocuments, expenses);
 
     expect(financials).toMatchObject({
-      revenueBasis: 780,
+      revenueBasis: 650,
       expensesTotal: 344,
-      margin: 436,
+      margin: 306,
     });
-    expect(financials.marginRate).toBeCloseTo(0.55897, 5);
+    expect(financials.marginRate).toBeCloseTo(0.47077, 5);
   });
 
   it("falls back to the estimated amount when no invoice or accepted quote exists", () => {

@@ -95,12 +95,12 @@ export function DocumentList({ clients, documents, projects }: DocumentListProps
             <TableHeader>
               <TableRow>
                 <TableHead>Type</TableHead>
-                <TableHead>Number</TableHead>
+                <TableHead>Numero</TableHead>
                 <TableHead>Client</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Issue date</TableHead>
-                <TableHead className="text-right">Total including VAT</TableHead>
+                <TableHead>Projet</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Date emission</TableHead>
+                <TableHead className="text-right">Total TTC</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

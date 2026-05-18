@@ -127,7 +127,7 @@ export function DashboardScreen({ data }: { data: DashboardData }) {
         <Panel className="min-w-0">
           <PanelHeader>
             <PanelTitle>Marge par projet</PanelTitle>
-            <PanelDescription>Base CA, depenses et marge estimee par dossier.</PanelDescription>
+            <PanelDescription>Base HT, depenses et marge estimee par dossier.</PanelDescription>
           </PanelHeader>
           <PanelContent>
             <MarginChart data={marginChartData} />
@@ -160,7 +160,7 @@ export function DashboardScreen({ data }: { data: DashboardData }) {
                   <TableHead>Statut</TableHead>
                   <TableHead>Risque</TableHead>
                   <TableHead>Livraison</TableHead>
-                  <TableHead className="text-right">CA base</TableHead>
+                  <TableHead className="text-right">CA HT</TableHead>
                   <TableHead className="text-right">Marge</TableHead>
                   <TableHead className="text-right">Taux</TableHead>
                 </TableRow>
